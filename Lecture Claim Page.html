@@ -1,0 +1,36 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lecture Claim</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="lecture-claim.js" defer></script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Claim Submissions</h2>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="lecture-claim.html">Lecture Claim</a>
+        <a href="academic-manager.html">Academic Manager</a>
+        <a href="human-resources.html">Human Resources</a>
+    </div>
+    <div class="content">
+        <div class="container">
+            <h2>Lecture Claim</h2>
+            <form id="claimForm">
+                <input type="text" id="claimLecturerName" class="form-input" placeholder="Lecturer Name" required>
+                <input type="email" id="claimEmail" class="form-input" placeholder="Lecturer Email" required>
+                <input type="text" id="claimProgramGroup" class="form-input" placeholder="Program Group" required>
+                <input type="number" id="claimHoursWorked" class="form-input" placeholder="Hours Worked" required oninput="calculateFinalPayment()">
+                <input type="number" id="claimHourlyRate" class="form-input" placeholder="Hourly Rate" required oninput="calculateFinalPayment()">
+                <input type="text" id="claimFinalPayment" class="form-input" placeholder="Final Payment" disabled>
+                <textarea id="claimDetails" class="form-input" placeholder="Claim Details" required></textarea>
+                <button type="button" class="form-submit" onclick="submitClaim()">Submit Claim</button>
+            </form>
+            <h3>Claims Submitted</h3>
+            <ul id="claimsList"></ul>
+        </div>
+    </div>
+</body>
+</html>

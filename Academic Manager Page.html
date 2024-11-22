@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Academic Manager</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="academic-manager.js" defer></script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Claim Submissions</h2>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="lecture-claim.html">Lecture Claim</a>
+        <a href="academic-manager.html">Academic Manager</a>
+        <a href="human-resources.html">Human Resources</a>
+    </div>
+    <div class="content">
+        <div class="container">
+            <h2>Academic Manager</h2>
+            <table id="claimsReviewTable">
+                <thead>
+                    <tr>
+                        <th>Lecturer Name</th>
+                        <th>Lecturer Email</th>
+                        <th>Program Group</th>
+                        <th>Final Payment</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="claimsTableBody">
+                    <!-- Claims will appear here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

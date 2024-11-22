@@ -1,0 +1,382 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Submissions Dashboard</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: #333;
+            color: white;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            padding-top: 40px;
+            box-sizing: border-box;
+        }
+
+            .sidebar h2 {
+                text-align: center;
+                color: white;
+            }
+
+            .sidebar a {
+                color: white;
+                text-decoration: none;
+                display: block;
+                padding: 15px;
+                text-align: center;
+                transition: background-color 0.3s;
+            }
+
+                .sidebar a:hover {
+                    background-color: #575757;
+                }
+
+        .content {
+            margin-left: 250px;
+            padding: 40px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+
+        th {
+            background-color: #f4f4f4;
+        }
+
+        .status {
+            font-weight: bold;
+        }
+
+            .status.pending {
+                color: orange;
+            }
+
+            .status.approved {
+                color: green;
+            }
+
+            .status.rejected {
+                color: red;
+            }
+
+        .form-input {
+            padding: 8px;
+            margin: 10px 0;
+            width: 100%;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .form-submit {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+            .form-submit:hover {
+                background-color: #45a049;
+            }
+    </style>
+</head>
+<body>
+
+    <div class="sidebar">
+        <h2>Claim Submissions</h2>
+        <a href="javascript:void(0);" onclick="showSection('dashboard')">Dashboard</a>
+        <a href="javascript:void(0);" onclick="showSection('lectureClaim')">Lecture Claim</a>
+        <a href="javascript:void(0);" onclick="showSection('academicManager')">Academic Manager</a>
+        <a href="javascript:void(0);" onclick="showSection('humanResources')">Human Resources</a>
+    </div>
+
+    <div class="content">
+        <div id="dashboard" class="container hidden">
+            <h1>Welcome to the Claim Submissions Dashboard</h1>
+            <p>Select an option from the sidebar to begin managing invoices, claims, and payments.</p>
+        </div>
+
+        <!-- Lecture Claim Page -->
+        <div id="lectureClaim" class="container hidden">
+            <h2>Lecture Claim</h2>
+            <form id="claimForm">
+                <input type="text" id="claimLecturerName" class="form-input" placeholder="Lecturer Name" required>
+                <input type="email" id="claimEmail" class="form-input" placeholder="Lecturer Email" required>
+                <input type="text" id="claimProgramGroup" class="form-input" placeholder="Program Group" required>
+                <input type="number" id="claimHoursWorked" class="form-input" placeholder="Hours Worked" required oninput="calculateFinalPayment()">
+                <input type="number" id="claimHourlyRate" class="form-input" placeholder="Hourly Rate" required oninput="calculateFinalPayment()">
+                <input type="text" id="claimFinalPayment" class="form-input" placeholder="Final Payment" disabled>
+                <textarea id="claimDetails" class="form-input" placeholder="Claim Details" required></textarea>
+                <button type="button" class="form-submit" onclick="submitClaim()">Submit Claim</button>
+            </form>
+            <h3>Claims Submitted</h3>
+            <ul id="claimsList"></ul>
+        </div>
+
+        <!-- Academic Manager Page (Claims Review) -->
+        <div id="academicManager" class="container hidden">
+            <h2>Academic Manager</h2>
+            <table id="claimsReviewTable">
+                <thead>
+                    <tr>
+                        <th>Lecturer Name</th>
+                        <th>Lecturer Email</th>
+                        <th>Program Group</th>
+                        <th>Final Payment</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="claimsTableBody">
+                    <!-- Claims will appear here -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Human Resources Page (Generate & Update Invoice) -->
+        <div id="humanResources" class="container hidden">
+            <h2>Human Resources - Invoice Management</h2>
+            <div id="generateInvoiceSection">
+                <h3>Pick Approved Claim for Invoice</h3>
+                <ul id="approvedClaimsList">
+                    <!-- Approved claims will appear here -->
+                </ul>
+                <button type="button" class="form-submit" onclick="pickClaimForInvoice()">Pick a Claim</button>
+                <input type="text" id="invoiceAmount" class="form-input" placeholder="Invoice Amount" disabled>
+                <textarea id="invoiceDetails" class="form-input" placeholder="Invoice Details" required></textarea>
+                <input type="file" id="payslipFile" class="form-input" accept=".pdf,.docx" required>
+                <button type="button" class="form-submit" onclick="generateInvoice()">Generate Invoice</button>
+            </div>
+
+            <hr>
+
+            <h3>Invoice Summary</h3>
+            <table id="invoiceTable">
+                <thead>
+                    <tr>
+                        <th>Invoice Number</th>
+                        <th>Lecturer Name</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Payslip</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Generated invoices will appear here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        let claims = [];
+        let invoices = [];
+        let invoiceCounter = 1;
+
+        // Show or hide sections
+        function showSection(sectionId) {
+            const sections = document.querySelectorAll('.container');
+            sections.forEach(section => {
+                section.classList.add('hidden');
+            });
+            document.getElementById(sectionId).classList.remove('hidden');
+        }
+
+        // Calculate the Final Payment when Hours Worked or Hourly Rate changes
+        function calculateFinalPayment() {
+            const hoursWorked = parseFloat(document.getElementById('claimHoursWorked').value) || 0;
+            const hourlyRate = parseFloat(document.getElementById('claimHourlyRate').value) || 0;
+            const finalPayment = hoursWorked * hourlyRate;
+
+            document.getElementById('claimFinalPayment').value = finalPayment.toFixed(2);
+        }
+
+        // Submit the claim
+        function submitClaim() {
+            const lecturerName = document.getElementById('claimLecturerName').value;
+            const email = document.getElementById('claimEmail').value;
+            const programGroup = document.getElementById('claimProgramGroup').value;
+            const hoursWorked = document.getElementById('claimHoursWorked').value;
+            const hourlyRate = document.getElementById('claimHourlyRate').value;
+            const finalPayment = document.getElementById('claimFinalPayment').value;
+            const claimDetails = document.getElementById('claimDetails').value;
+
+            if (lecturerName && email && programGroup && hoursWorked && hourlyRate && finalPayment && claimDetails) {
+                const claim = {
+                    lecturerName,
+                    email,
+                    programGroup,
+                    hoursWorked,
+                    hourlyRate,
+                    finalPayment,
+                    claimDetails,
+                    status: 'Pending',
+                };
+
+                claims.push(claim);
+                updateClaimsTable();
+                updateClaimsList();
+            } else {
+                alert('Please fill in all fields');
+            }
+        }
+
+        // Update the claims table in the Academic Manager section
+        function updateClaimsTable() {
+            const claimsTableBody = document.getElementById('claimsTableBody');
+            claimsTableBody.innerHTML = '';
+            claims.forEach((claim, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${claim.lecturerName}</td>
+                        <td>${claim.email}</td>
+                        <td>${claim.programGroup}</td>
+                        <td>${claim.finalPayment}</td>
+                        <td class="status ${claim.status.toLowerCase()}">${claim.status}</td>
+                        <td><button onclick="approveClaim(${index})">Approve</button> <button onclick="rejectClaim(${index})">Reject</button></td>
+                    `;
+                claimsTableBody.appendChild(row);
+            });
+        }
+
+        // Update the claims list in the Lecture Claim section
+        function updateClaimsList() {
+            const claimsList = document.getElementById('claimsList');
+            claimsList.innerHTML = '';
+            claims.forEach((claim, index) => {
+                const listItem = document.createElement('li');
+                listItem.textContent = `${claim.lecturerName} - ${claim.finalPayment}`;
+                const approveButton = document.createElement('button');
+                approveButton.textContent = 'Approve';
+                approveButton.onclick = () => approveClaim(index);
+                listItem.appendChild(approveButton);
+                claimsList.appendChild(listItem);
+            });
+        }
+
+        // Update the approved claims list in the HR section
+        function updateApprovedClaimsList() {
+            const approvedClaimsList = document.getElementById('approvedClaimsList');
+            approvedClaimsList.innerHTML = '';
+            claims.forEach((claim) => {
+                if (claim.status === 'Approved') {
+                    const listItem = document.createElement('li');
+                    listItem.textContent = `${claim.lecturerName} - ${claim.finalPayment}`;
+                    approvedClaimsList.appendChild(listItem);
+                }
+            });
+        }
+
+        // Approve claim
+        function approveClaim(index) {
+            claims[index].status = 'Approved';
+            updateClaimsTable();
+            updateApprovedClaimsList();
+        }
+
+        // Reject claim
+        function rejectClaim(index) {
+            claims[index].status = 'Rejected';
+            updateClaimsTable();
+        }
+
+        // Pick claim for invoice generation
+        function pickClaimForInvoice() {
+            const approvedClaim = claims.find(c => c.status === 'Approved');
+            if (approvedClaim) {
+                document.getElementById('invoiceAmount').value = approvedClaim.finalPayment;
+                document.getElementById('invoiceDetails').value = approvedClaim.claimDetails;
+            } else {
+                alert('No approved claims available for invoice generation.');
+            }
+        }
+
+        // Generate invoice
+        function generateInvoice() {
+            const invoiceDetails = document.getElementById('invoiceDetails').value;
+            const amount = document.getElementById('invoiceAmount').value;
+            const payslipFile = document.getElementById('payslipFile').files[0];
+
+            if (invoiceDetails && amount && payslipFile) {
+                const newInvoice = {
+                    invoiceNumber: invoiceCounter++,
+                    lecturerName: claims[0].lecturerName,
+                    amount,
+                    status: 'Pending',
+                    payslipFile: payslipFile.name,
+                };
+                invoices.push(newInvoice);
+                updateInvoiceTable();
+            } else {
+                alert('Please fill in all fields and upload a valid payslip file.');
+            }
+        }
+
+        // Update the invoice table
+        function updateInvoiceTable() {
+            const invoiceTable = document.getElementById('invoiceTable').querySelector('tbody');
+            invoiceTable.innerHTML = '';
+            invoices.forEach(invoice => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                        <td>${invoice.invoiceNumber}</td>
+                        <td>${invoice.lecturerName}</td>
+                        <td>${invoice.amount}</td>
+                        <td class="status">${invoice.status}</td>
+                        <td><a href="#">${invoice.payslipFile}</a></td>
+                        <td><button onclick="markInvoicePaid(${invoice.invoiceNumber})">Mark as Paid</button></td>
+                    `;
+                invoiceTable.appendChild(row);
+            });
+        }
+
+        // Mark invoice as paid
+        function markInvoicePaid(invoiceNumber) {
+            const invoice = invoices.find(invoice => invoice.invoiceNumber === invoiceNumber);
+            if (invoice) {
+                invoice.status = 'Paid';
+                updateInvoiceTable();
+            }
+        }
+
+        // Initial setup
+        showSection('dashboard');
+    </script>
+</body>
+</html>

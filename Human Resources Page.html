@@ -1,0 +1,48 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Human Resources</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="human-resources.js" defer></script>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>Claim Submissions</h2>
+        <a href="dashboard.html">Dashboard</a>
+        <a href="lecture-claim.html">Lecture Claim</a>
+        <a href="academic-manager.html">Academic Manager</a>
+        <a href="human-resources.html">Human Resources</a>
+    </div>
+    <div class="content">
+        <div class="container">
+            <h2>Human Resources - Invoice Management</h2>
+            <div id="generateInvoiceSection">
+                <h3>Pick Approved Claim for Invoice</h3>
+                <ul id="approvedClaimsList"></ul>
+                <button type="button" class="form-submit" onclick="pickClaimForInvoice()">Pick a Claim</button>
+                <input type="text" id="invoiceAmount" class="form-input" placeholder="Invoice Amount" disabled>
+                <textarea id="invoiceDetails" class="form-input" placeholder="Invoice Details" required></textarea>
+                <input type="file" id="payslipFile" class="form-input" accept=".pdf,.docx" required>
+                <button type="button" class="form-submit" onclick="generateInvoice()">Generate Invoice</button>
+            </div>
+            <hr>
+            <h3>Invoice Summary</h3>
+            <table id="invoiceTable">
+                <thead>
+                    <tr>
+                        <th>Invoice Number</th>
+                        <th>Lecturer Name</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Payslip</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
